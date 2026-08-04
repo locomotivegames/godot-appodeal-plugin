@@ -41,3 +41,7 @@ func _on_interst_pressed() -> void:
 func _on_rewarded_pressed() -> void:
 	if appodeal.is_rewarded_loaded():
 		appodeal.show_rewarded("")
+
+
+func _on_appodeal_ads_banner_shown() -> void:
+	print("Banner Shown")

@@ -1,12 +1,12 @@
 @tool
-@icon("res://addons/AppodealNative/icon.png")
+@icon("res://addons/AppodealNative/icon.svg")
 extends Node
 
 class_name AppodealAds
 @export var app_key:String = "your appodeal app key here.."
-@export var is_testing : bool = false
+@export var is_testing : bool = true
 @export var auto_cache : bool = true
-@export var UMP_consent_debug_mode : bool = true
+@export var UMP_consent_debug_mode : bool = false
 
 var device_hashed_id = "442134D66BAFF9D612160C4228334C8"
 # use this to filter logcat and get device id after running the app once :adb logcat -v time | findstr /i "addTestDeviceHashedId ConsentDebugSettings UserMessagingPlatform UMP requestConsentInfoUpdate consent"
