@@ -26,6 +26,7 @@ import com.appodeal.consent.ConsentUpdateRequestParameters
 import com.appodeal.consent.ConsentInfoUpdateCallback
 import com.appodeal.consent.ConsentManagerError
 import com.appodeal.consent.OnConsentFormDismissedListener
+import com.appodeal.consent.PrivacyOptionsRequirementStatus
 import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
@@ -99,6 +100,40 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
             "Error: ${e.message}"
         }
     }
+    /**
+     * Whether the user's region requires an entry point that reopens the
+     * consent choices (EEA/UK under TCF). Valid after request_consent_info_update.
+     */
+    @UsedByGodot
+    fun is_privacy_options_required(): Boolean {
+        return try {
+            ConsentManager.getPrivacyOptionsRequirementStatus() == PrivacyOptionsRequirementStatus.Required
+        } catch (e: Throwable) {
+            false
+        }
+    }
+
+    /** Reopens the consent form so the user can change their choice. */
+    @UsedByGodot
+    fun show_privacy_options_form() {
+        val currentActivity = activity ?: return
+        currentActivity.runOnUiThread {
+            try {
+                ConsentManager.showPrivacyOptionsForm(
+                    currentActivity,
+                    object : OnConsentFormDismissedListener {
+                        override fun onConsentFormDismissed(error: ConsentManagerError?) {
+                            emitToGodot("privacy_options_dismissed", error == null, error?.toString() ?: "")
+                        }
+                    }
+                )
+            } catch (e: Throwable) {
+                Log.e(tag, "show_privacy_options_form error: ${e.message}", e)
+                emitToGodot("privacy_options_dismissed", false, e.message ?: "Unknown error")
+            }
+        }
+    }
+
     @UsedByGodot
     fun can_show_ads_after_consent(): Boolean {
         return try {
@@ -221,6 +256,7 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
             SignalInfo("consent_info_updated", Boolean::class.javaObjectType, String::class.java),
             SignalInfo("consent_form_dismissed", Boolean::class.javaObjectType, String::class.java),
             SignalInfo("privacy_options_status", String::class.java),
+            SignalInfo("privacy_options_dismissed", Boolean::class.javaObjectType, String::class.java),
 
             SignalInfo("initialization_finished", Boolean::class.javaObjectType, String::class.java),
 

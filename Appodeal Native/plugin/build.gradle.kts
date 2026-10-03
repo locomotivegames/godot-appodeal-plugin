@@ -45,7 +45,7 @@ dependencies {
     // TODO: Additional dependencies should be added to export_plugin.gd as well.
 
     // Appodeal core
-    implementation("com.appodeal.ads.sdk:core:4.3.0")
+    implementation("com.appodeal.ads.sdk:core:4.4.0")
 
     // BidMachine
     implementation("io.bidmachine:ads.networks.amazon:12.0.0.0")
